@@ -40,3 +40,7 @@ class BasePage:
             return True
         except TimeoutException:
             return False
+        
+    def wait_for_url(self, url, timeout=10):
+        """Ожидание появления URL."""
+        WebDriverWait(self.driver, timeout).until(EC.url_contains(url))
