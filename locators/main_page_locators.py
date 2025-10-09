@@ -10,7 +10,14 @@ class MainPageLocators:
     CONSTRUCTOR_BUTTON = (By.XPATH, "//p[text()='Конструктор']")
     
     # Кнопка "Лента заказов"
-    ORDER_FEED_BUTTON = (By.XPATH, "//p[text()='Лента заказов']")
+    ORDER_FEED_BUTTON = (By.XPATH, "//p[text()='Лента Заказов']")
     
-    # Кнопка "Войти в аккаунт" на главной
-    # LOGIN_BUTTON = (By.XPATH, "//button[text()='Войти в аккаунт']")
+    # Локаторы для модального окна
+    # Первый ингредиент в списке (булка)
+    FIRST_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[1]")
+    MODAL_OVERLAY = (By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__')]")
+    MODAL_CONTENT = (By.XPATH, "//div[contains(@class, 'Modal_modal__contentBox__sCy8X')]")
+    MODAL_TITLE = (By.XPATH, "//h2[text()='Детали ингредиента']")
+
+    # Исправленный локатор для крестика
+    MODAL_CLOSE_BUTTON = (By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
