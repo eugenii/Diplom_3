@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver import ActionChains
 
 
 class BasePage:
@@ -8,6 +9,7 @@ class BasePage:
         self.driver = driver
         self.base_url = "https://stellarburgers.nomoreparties.site"
         self.wait = WebDriverWait(driver, 10)
+        self.actions = ActionChains(driver)
     
     def find_element(self, locator):
         """Найти элемент с ожиданием"""
@@ -44,3 +46,17 @@ class BasePage:
     def wait_for_url(self, url, timeout=10):
         """Ожидание появления URL."""
         WebDriverWait(self.driver, timeout).until(EC.url_contains(url))
+
+    def drag_and_drop(self, source_locator, target_locator):
+        """Перетащить элемент из source в target."""
+        source = self.find_element(source_locator)
+        target = self.find_element(target_locator)
+        self.actions.drag_and_drop(source, target).perform()
+    
+    def get_counter_value(self, counter_locator):
+        """Получить значение каунтера."""
+        try:
+            counter = self.find_element(counter_locator)
+            return int(counter.text)
+        except:
+            return 0

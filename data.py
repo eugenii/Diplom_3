@@ -1,4 +1,7 @@
+BASE_URL = "https://stellarburgers.education-services.ru"
+
 # Тестовые данные пользователя
+
 class TestUser:
     # TODO: Заменить на реальные данные существующего пользователя
     EMAIL = "your_test_email@yandex.ru"

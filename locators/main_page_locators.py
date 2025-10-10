@@ -21,3 +21,17 @@ class MainPageLocators:
 
     # Исправленный локатор для крестика
     MODAL_CLOSE_BUTTON = (By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
+
+    # Локаторы для конструктора (область куда перетаскивать)
+    CONSTRUCTOR_AREA = (By.XPATH, "//ul[contains(@class, 'BurgerConstructor_basket__list__l9dp_')]")
+
+    # Локаторы для каунтеров ингредиентов
+    INGREDIENT_COUNTER = (By.XPATH, "//p[contains(@class, 'counter_counter__num__3nue1')]")
+
+    # Локаторы для конкретных ингредиентов (пример)
+    BUN_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[1]")
+    SAUCE_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[6]")
+    MAIN_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[11]")
+
+    # Локаторы для каунтеров
+    BUN_COUNTER = (By.XPATH, "(//section[h2[text()='Булки']]//p[contains(@class, 'counter_counter__num__3nue1')])[1]")

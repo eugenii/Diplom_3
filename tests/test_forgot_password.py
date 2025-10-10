@@ -1,5 +1,7 @@
 # tests/test_forgot_password.py
 import pytest
+
+from data import BASE_URL
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.login_page import LoginPage
@@ -16,7 +18,7 @@ class TestForgotPassword:
         # 1.1 Переход на страницу восстановления пароля по кнопке «Восстановить пароль»
         print("Шаг 1.1: Переход на страницу восстановления пароля...")
         login_page = LoginPage(driver)
-        driver.get("https://stellarburgers.nomoreparties.site/login")
+        driver.get(f"{BASE_URL}/login")
         
         # Проверяем, что находимся на странице логина
         assert "/login" in driver.current_url, "Не находимся на странице логина"
@@ -70,7 +72,7 @@ class TestForgotPassword:
         
         # Переходим прямо на страницу ЛОГИНА
         login_page = LoginPage(driver)
-        driver.get("https://stellarburgers.nomoreparties.site/login")
+        driver.get(f"{BASE_URL}/login")
         
         print("✅ Перешли на страницу логина")
         

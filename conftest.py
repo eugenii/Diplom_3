@@ -21,7 +21,7 @@ def driver(request):
     #     driver = webdriver.Firefox(options=firefox_options)
     
     driver.implicitly_wait(10)  # неявные ожидания
-    driver.get("https://stellarburgers.nomoreparties.site/")
+    # driver.get("https://stellarburgers.nomoreparties.site/")
     
     yield driver
     driver.quit()

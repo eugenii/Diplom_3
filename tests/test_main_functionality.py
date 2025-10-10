@@ -3,6 +3,8 @@ import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+
+from data import BASE_URL
 from pages.main_page import MainPage
 
 
@@ -15,7 +17,7 @@ class TestMainFunctionality:
         
         # Переходим на главную страницу
         main_page = MainPage(driver)
-        driver.get("https://stellarburgers.nomoreparties.site/")
+        driver.get(f"{BASE_URL}/")
         
         print("✅ Перешли на главную страницу")
         
@@ -49,7 +51,7 @@ class TestMainFunctionality:
         
         # Переходим на главную страницу
         main_page = MainPage(driver)
-        driver.get("https://stellarburgers.nomoreparties.site/")
+        driver.get(f"{BASE_URL}/")
         
         print("✅ Перешли на главную страницу")
         
@@ -76,3 +78,32 @@ class TestMainFunctionality:
         print("✅ 3.4: Модальное окно закрылось по клику на крестик")
         
         print("🎉 Тесты 3.3-3.4 пройдены успешно!")
+
+    def test_ingredient_counter_increases(self, driver):
+        """3.5: При добавлении ингредиента в заказ увеличивается каунтер"""
+        print("\n=== Тест 3.5: Каунтер ингредиентов ===")
+        
+        # Переходим на главную страницу с новым URL
+        main_page = MainPage(driver)
+        driver.get("https://stellarburgers.education-services.ru/")
+        
+        print("✅ Перешли на главную страницу")
+        
+        # Получаем начальное значение каунтера булки
+        initial_counter = main_page.get_counter_value(main_page.locators.BUN_COUNTER)
+        print(f"Начальное значение каунтера: {initial_counter}")
+        
+        # Перетаскиваем булку в конструктор
+        print("Перетаскиваем булку в конструктор...")
+        main_page.drag_and_drop(main_page.locators.BUN_INGREDIENT, main_page.locators.CONSTRUCTOR_AREA)
+        
+        # Проверяем, что каунтер увеличился
+        WebDriverWait(driver, 5).until(
+            lambda d: main_page.get_counter_value(main_page.locators.BUN_COUNTER) > initial_counter
+        )
+        
+        final_counter = main_page.get_counter_value(main_page.locators.BUN_COUNTER)
+        print(f"Конечное значение каунтера: {final_counter}")
+        
+        assert final_counter > initial_counter, "Каунтер не увеличился после добавления ингредиента"
+        print("✅ 3.5: Каунтер ингредиента увеличился после добавления в заказ")

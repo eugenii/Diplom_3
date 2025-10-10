@@ -3,6 +3,8 @@ import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+
+from data import BASE_URL
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.account_profile import AccountProfile
@@ -18,7 +20,7 @@ class TestPersonalAccount:
         # Сначала нужно авторизоваться
         print("Шаг: Авторизация...")
         login_page = LoginPage(driver)
-        driver.get("https://stellarburgers.nomoreparties.site/login")
+        driver.get(f"{BASE_URL}/login")
         
         # Авторизуемся с использованием метода login
         login_page.login("123@g.ru", "123456")
@@ -57,7 +59,7 @@ class TestPersonalAccount:
         
         # Вместо перехода на /account/profile, выходим через главное меню
         # Переходим на главную страницу
-        driver.get("https://stellarburgers.nomoreparties.site/")
+        driver.get(f"{BASE_URL}/")
         
         # Кликаем на личный кабинет (должен открыться профиль)
         main_page = MainPage(driver)
