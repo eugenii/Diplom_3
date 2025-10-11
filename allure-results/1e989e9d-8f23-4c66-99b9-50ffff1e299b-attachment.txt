@@ -1,0 +1,14 @@
+Текущий URL: https://stellarburgers.education-services.ru/reset-password
+Заголовок страницы: Stellar Burgers
+Найдено элементов с классом 'input': 5
+Элемент 0: классы = input__container
+  -> Внутренний input 0: type=password, name=Введите новый пароль, placeholder=
+  -> Кнопка с классами: input__icon input__icon-action
+Элемент 1: классы = input pr-6 pl-6 input_type_password input_size_default
+  -> Внутренний input 0: type=password, name=Введите новый пароль, placeholder=
+  -> Кнопка с классами: input__icon input__icon-action
+Элемент 2: классы = input__icon input__icon-action
+Элемент 3: классы = input__container
+  -> Внутренний input 0: type=text, name=name, placeholder=
+Элемент 4: классы = input pr-6 pl-6 input_type_text input_size_default
+  -> Внутренний input 0: type=text, name=name, placeholder=

@@ -60,3 +60,15 @@ class BasePage:
             return int(counter.text)
         except:
             return 0
+        
+    def click_element_js(self, locator):
+        """Кликнуть по элементу через JavaScript."""
+        element = self.find_element(locator)
+        self.driver.execute_script("arguments[0].click();", element)
+    
+    def safe_click(self, locator, use_js=False):
+        """Безопасный клик с возможностью использовать JavaScript."""
+        if use_js:
+            self.click_element_js(locator)
+        else:
+            self.click_element(locator)
