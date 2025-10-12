@@ -3,11 +3,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
 
+from data import BASE_URL
+
 
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
-        self.base_url = "https://stellarburgers.nomoreparties.site"
+        self.base_url = BASE_URL
         self.wait = WebDriverWait(driver, 10)
         self.actions = ActionChains(driver)
     

@@ -17,6 +17,16 @@ class PersonalAccountLocators:
     
     # Кнопка "Конструктор" в хедере
     CONSTRUCTOR_BUTTON = (By.XPATH, "//a[@href='/']")
+    ORDER_FEED_BUTTON = (By.XPATH, "//p[text()='Лента Заказов']")
     
     # Логотип Stellar Burgers
     LOGO_BUTTON = (By.XPATH, "//div[contains(@class, 'AppHeader_header__logo')]")
+
+    # Подтверждение выхода
+    LOGIN_HEADER_AFTER_LOGOUT = (By.XPATH, "//h2[text()='Вход']")
+    
+    # Элементы для проверки авторизации
+    USER_NAME_IN_PROFILE = (By.XPATH, "//input[@name='Name']")
+    
+    # Кнопка "Войти в аккаунт" на главной
+    LOGIN_BUTTON_MAIN = (By.XPATH, "//button[text()='Войти в аккаунт']")
