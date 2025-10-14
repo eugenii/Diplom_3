@@ -2,6 +2,9 @@ from .base_page import BasePage
 from locators.main_page_locators import MainPageLocators
 import allure
 
+from selenium.webdriver import ActionChains
+
+
 class MainPage(BasePage):
     """Класс для работы с главной страницей и навигацией."""
     
@@ -60,3 +63,30 @@ class MainPage(BasePage):
     def go_to_main_page(self):
         """Перейти на главную страницу."""
         self.driver.get(self.base_url)
+
+
+    @allure.step("Перетащить элемент в конструктор")
+    def drag_element_to_constructor(self, element, target_locator):
+        """Перетащить элемент в зону конструктора."""
+        target = self.find_element(target_locator)
+        ActionChains(self.driver).drag_and_drop(element, target).perform()
+    
+    @allure.step("Добавить булку в конструктор")
+    def add_bun_to_constructor(self):
+        """Добавить булку в конструктор."""
+        bun = self.find_element(MainPageLocators.BUN_INGREDIENT)
+        self.drag_element_to_constructor(bun, MainPageLocators.CONSTRUCTOR_AREA)
+    
+    @allure.step("Добавить соус в конструктор")
+    def add_sauce_to_constructor(self):
+        """Добавить соус в конструктор."""
+        sauce = self.find_element(MainPageLocators.SAUCE_INGREDIENT)
+        self.drag_element_to_constructor(sauce, MainPageLocators.CONSTRUCTOR_AREA)
+
+    
+    @allure.step("Добавить начинку в конструктор")
+    def add_filling_to_constructor(self):
+        """Добавить начинку в конструктор."""
+        filling = self.find_element(MainPageLocators.FILLING_INGREDIENT)
+        constructor_area = self.find_element(MainPageLocators.CONSTRUCTOR_AREA)
+        ActionChains(self.driver).drag_and_drop(filling, constructor_area).perform()

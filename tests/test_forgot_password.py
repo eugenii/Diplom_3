@@ -1,6 +1,8 @@
 import allure
 import pytest
-from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from data import LOGIN_URL, FORGOT_PASSWORD_URL
 from data import TestForgotPasswordData
 from pages.login_page import LoginPage
@@ -9,82 +11,80 @@ from pages.forgot_password import ForgotPassword
 @pytest.mark.usefixtures("driver")
 class TestForgotPassword:
     
-    @allure.feature("Восстановление пароля")
-    @allure.story("Переход на страницу восстановления пароля")
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("1.1: Переход на страницу восстановления пароля")
     def test_go_to_forgot_password_page(self, driver):
-        """1.1: Переход на страницу восстановления пароля."""
+        login_page = LoginPage(driver)
+        driver.get(LOGIN_URL)
         
-        with allure.step("Перейти на страницу логина"):
-            driver.get(LOGIN_URL)
-            login_page = LoginPage(driver)
-            assert login_page.is_login_page(), "Не удалось перейти на страницу логина"
+        login_page.click_forgot_password_button()
         
-        with allure.step("Кликнуть на кнопку 'Восстановить пароль'"):
-            login_page.click_forgot_password_button()
-        
-        with allure.step("Проверить переход на страницу восстановления пароля"):
-            forgot_password_page = ForgotPassword(driver)
-            assert "forgot-password" in driver.current_url
-            assert forgot_password_page.is_email_field_visible()
+        forgot_password_page = ForgotPassword(driver)
+        assert "forgot-password" in driver.current_url
+        assert forgot_password_page.is_email_field_visible()
     
-    @allure.feature("Восстановление пароля")
-    @allure.story("Ввод почты и восстановление пароля")
-    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("1.2: Ввод почты и восстановление пароля")
     def test_enter_email_and_restore_password(self, driver):
-        """1.2: Ввод почты и клик по кнопке «Восстановить»."""
+        forgot_password_page = ForgotPassword(driver)
+        driver.get(FORGOT_PASSWORD_URL)
         
-        with allure.step("Перейти на страницу восстановления пароля"):
-            driver.get(FORGOT_PASSWORD_URL)
-            forgot_password_page = ForgotPassword(driver)
-            assert forgot_password_page.is_forgot_password_page()
+        forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
+        forgot_password_page.click_restore_button()
         
-        with allure.step("Ввести email в поле"):
-            forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
+        # Ждем перехода на страницу сброса пароля
+        WebDriverWait(driver, 10).until(
+            lambda d: "reset-password" in d.current_url or forgot_password_page.is_reset_password_page()
+        )
         
-        with allure.step("Кликнуть на кнопку 'Восстановить'"):
-            forgot_password_page.click_restore_button()
-        
-        with allure.step("Проверить результат операции"):
-            current_url = driver.current_url
-            if "reset-password" in current_url:
-                assert "reset-password" in current_url
-            else:
-                assert forgot_password_page.is_success_message_displayed() or "forgot-password" in current_url
+        current_url = driver.current_url
+        assert "reset-password" in current_url or forgot_password_page.is_reset_password_page()
     
-    @allure.feature("Восстановление пароля")
-    @allure.story("Кнопка показать/скрыть пароль делает поле активным")
-    @allure.severity(allure.severity_level.NORMAL)
+
+    @allure.title("1.3: Кнопка показать/скрыть пароль делает поле активным")
     def test_eye_button_activates_password_field(self, driver):
-        """1.3: Клик по кнопке показать/скрыть пароль делает поле активным."""
+        """Тест проверяет, что кнопка глаза меняет класс контейнера и тип поля."""
+        forgot_password_page = ForgotPassword(driver)
+        driver.get(FORGOT_PASSWORD_URL)
         
-        with allure.step("Перейти на страницу восстановления пароля"):
-            driver.get(FORGOT_PASSWORD_URL)
-            forgot_password_page = ForgotPassword(driver)
+        forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
+        forgot_password_page.click_restore_button()
         
-        with allure.step("Восстановить пароль"):
-            forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
-            forgot_password_page.click_restore_button()
-            forgot_password_page.wait_for_url_contains("reset-password")
+        # Ждем перехода на страницу сброса пароля
+        WebDriverWait(driver, 10).until(
+            lambda d: "reset-password" in d.current_url
+        )
         
-        with allure.step("Найти элементы страницы"):
-            # Находим контейнер поля пароля
-            container = driver.find_element(By.XPATH, "//div[contains(@class, 'input_type_password')]")
-            
-            # Находим кнопку глаза
-            eye_button = driver.find_element(By.XPATH, "//div[contains(@class, 'input__icon-action')]")
+        # Проверяем состояние ДО клика
+        type_before = forgot_password_page.get_password_field_type()
+        container_before = forgot_password_page.get_password_container_classes()
+        print(f"ДО клика - Тип: {type_before}, Контейнер: {container_before}")
         
-        with allure.step("Проверить состояние ДО клика"):
-            classes_before = container.get_attribute("class")
-            is_active_before = "input_status_active" in classes_before
+        # Убеждаемся, что начальное состояние правильное
+        assert type_before == "password", f"Тип поля должен быть 'password', но: {type_before}"
+        assert "input_type_password" in container_before, f"Контейнер должен содержать input_type_password, но: {container_before}"
         
-        with allure.step("Кликнуть на кнопку показать/скрыть пароль"):
-            eye_button.click()
+        # Кликаем на кнопку глаза
+        forgot_password_page.click_show_hide_password_button()
         
-        with allure.step("Проверить состояние ПОСЛЕ клика"):
-            classes_after = container.get_attribute("class")
-            is_active_after = "input_status_active" in classes_after
-            
-            # Проверяем, что добавился класс input_status_active
-            assert is_active_after, \
-                f"Класс input_status_active не добавлен. Было: {classes_before}, стало: {classes_after}"
+        # Ждем изменения состояния с явными ожиданиями (вместо time.sleep)
+        forgot_password_page.wait_for_password_field_change(timeout=5)
+        forgot_password_page.wait_for_container_change(timeout=5)
+        
+        # Проверяем состояние ПОСЛЕ клика
+        type_after = forgot_password_page.get_password_field_type()
+        container_after = forgot_password_page.get_password_container_classes()
+        print(f"ПОСЛЕ клика - Тип: {type_after}, Контейнер: {container_after}")
+        
+        # Основные проверки после клика:
+        # 1. Тип поля должен измениться на text
+        assert type_after == "text", f"Тип поля должен быть 'text' после клика, но: {type_after}"
+        
+        # 2. Контейнер должен содержать input_type_text
+        assert "input_type_text" in container_after, f"Контейнер должен содержать input_type_text после клика, но: {container_after}"
+        
+        # 3. Контейнер не должен содержать input_type_password
+        assert "input_type_password" not in container_after, f"Контейнер не должен содержать input_type_password после клика, но: {container_after}"
+        
+        # 4. Дополнительно: должен появиться класс input_status_active
+        assert "input_status_active" in container_after, f"Контейнер должен содержать input_status_active после клика, но: {container_after}"
+        
+        print("✅ Тест пройден: кнопка глаза успешно меняет тип поля и классы контейнера")

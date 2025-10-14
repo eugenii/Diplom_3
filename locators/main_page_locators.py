@@ -24,3 +24,20 @@ class MainPageLocators:
     
     # Конструктор бургера
     BURGER_CONSTRUCTOR = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_basket')]")
+
+        # Ссылки для навигации
+    CONSTRUCTOR_LINK = (By.XPATH, "//p[text()='Конструктор']")
+    ORDER_FEED_LINK = (By.XPATH, "//p[text()='Лента Заказов']")
+    
+    # Ингредиенты для drag-and-drop
+    BUN_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[1]")
+    SAUCE_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[4]")
+    FILLING_INGREDIENT = (By.XPATH, "(//a[contains(@class, 'BurgerIngredient_ingredient__1TVf6')])[7]")
+    
+    # Область конструктора для drop
+    CONSTRUCTOR_AREA = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_basket__29Cd7')]")
+    
+    # Кнопка оформления заказа и модальное окно
+    ORDER_BUTTON = (By.XPATH, "//button[text()='Оформить заказ']")
+    ORDER_MODAL = (By.XPATH, "//div[contains(@class, 'Modal_modal__container__Wo2l_')]")
+    ORDER_NUMBER = (By.XPATH, "//h2[contains(@class, 'Modal_modal__title__2L34m')]")

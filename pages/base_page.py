@@ -74,3 +74,8 @@ class BasePage:
             self.click_element_js(locator)
         else:
             self.click_element(locator)
+
+    # def drag_and_drop_element(self, source_element, target_locator):
+    #     """Перетащить элемент (не локатор) в target локатор."""
+    #     target = self.find_element(target_locator)
+    #     self.actions.drag_and_drop(source_element, target).perform()
