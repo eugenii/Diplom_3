@@ -1,14 +1,14 @@
-# [file name]: conftest.py
 import allure
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from data import BASE_URL
 
-@pytest.fixture(params=["chrome"])  # Только Chrome - РАБОЧИЙ вариант
+@pytest.fixture(params=["chrome", "firefox"])  # Только Chrome - РАБОЧИЙ вариант
 def driver(request):
     browser_name = request.param
     driver = None
@@ -18,6 +18,12 @@ def driver(request):
         chrome_options.add_argument("--window-size=1920,1080")
         # chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
+    elif browser_name == "firefox":
+        firefox_options = FirefoxOptions()
+        firefox_options.add_argument("--width=1920")
+        firefox_options.add_argument("--height=1080")
+        # firefox_options.add_argument("--headless")
+        driver = webdriver.Firefox(options=firefox_options)
     
     driver.implicitly_wait(10)
     with allure.step(f"Открытие браузера {browser_name}"):
