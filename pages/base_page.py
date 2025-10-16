@@ -1,7 +1,8 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
 
 from data import BASE_URL
 
@@ -75,7 +76,37 @@ class BasePage:
         else:
             self.click_element(locator)
 
-    # def drag_and_drop_element(self, source_element, target_locator):
-    #     """Перетащить элемент (не локатор) в target локатор."""
-    #     target = self.find_element(target_locator)
-    #     self.actions.drag_and_drop(source_element, target).perform()
+    def wait_for_modal_to_disappear(self, timeout=10):
+        """Ожидать исчезновение модального окна."""
+        try:
+            # Сначала проверяем, есть ли модальное окно
+            WebDriverWait(self.driver, 3).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "Modal_modal_overlay__x2ZCr"))
+            )
+            # Если есть - ждем его исчезновения
+            WebDriverWait(self.driver, timeout).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, "Modal_modal_overlay__x2ZCr"))
+            )
+            print("✅ Модальное окно исчезло")
+            return True
+        except TimeoutException:
+            # Если модальное окно не появилось или не исчезло - это нормально
+            print("ℹ️ Модальное окно не найдено или не исчезло")
+            return False
+
+    def safe_click_with_modal_check(self, locator, browser_name="chrome"):
+        """Безопасный клик с проверкой модального окна для Firefox."""
+        if browser_name.lower() == "firefox":
+            print(f"🦊 Firefox: Обработка клика для {locator}")
+            
+            # Для Firefox используем комбинированный подход
+            # 1. Ждем исчезновения модального окна
+            self.wait_for_modal_to_disappear(8)
+            
+            # 2. Всегда используем JS клик для надежности
+            self.click_element_js(locator)
+            print("✅ JS клик выполнен успешно")
+            
+        else:
+            # Для Chrome обычный клик
+            self.click_element(locator)

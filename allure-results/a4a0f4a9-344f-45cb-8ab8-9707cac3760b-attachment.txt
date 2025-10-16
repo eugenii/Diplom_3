@@ -1,3 +1,0 @@
-ДО клика - Тип: password, Контейнер: input pr-6 pl-6 input_type_password input_size_default
-ПОСЛЕ клика - Тип: text, Контейнер: input pr-6 pl-6 input_type_text input_size_default input_status_active
-✅ Тест пройден: кнопка глаза успешно меняет тип поля и классы контейнера
