@@ -1,9 +1,6 @@
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from data import LOGIN_URL, FORGOT_PASSWORD_URL
 from data import TestForgotPasswordData
 from pages.login_page import LoginPage
 from pages.forgot_password import ForgotPassword
@@ -14,20 +11,25 @@ class TestForgotPassword:
     @allure.title("1.1: Переход на страницу восстановления пароля")
     def test_go_to_forgot_password_page(self, driver):
         login_page = LoginPage(driver)
-        driver.get(LOGIN_URL)
+        forgot_password_page = ForgotPassword(driver)
+        
+        # Переходим на страницу логина через метод страницы
+        login_page.navigate_to_login()
         
         # Определяем имя браузера для обработки модального окна
         browser_name = driver.capabilities['browserName']
         login_page.click_forgot_password_button(browser_name)
         
-        forgot_password_page = ForgotPassword(driver)
-        assert "forgot-password" in driver.current_url
+        # Проверяем через методы страниц
+        assert forgot_password_page.is_on_forgot_password_page()
         assert forgot_password_page.is_email_field_visible()
     
     @allure.title("1.2: Ввод почты и восстановление пароля")
     def test_enter_email_and_restore_password(self, driver):
         forgot_password_page = ForgotPassword(driver)
-        driver.get(FORGOT_PASSWORD_URL)
+        
+        # Переходим на страницу восстановления пароля через метод страницы
+        forgot_password_page.navigate_to_forgot_password()
         
         forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
         
@@ -35,20 +37,20 @@ class TestForgotPassword:
         browser_name = driver.capabilities['browserName']
         forgot_password_page.click_restore_button(browser_name)
         
-        # Ждем перехода на страницу сброса пароля
-        WebDriverWait(driver, 10).until(
-            lambda d: "reset-password" in d.current_url or forgot_password_page.is_reset_password_page()
-        )
+        # Ждем перехода на страницу сброса пароля через метод страницы
+        forgot_password_page.wait_for_reset_password_page(10)
         
-        current_url = driver.current_url
-        assert "reset-password" in current_url or forgot_password_page.is_reset_password_page()
+        # Проверяем через методы страниц
+        assert forgot_password_page.is_on_reset_password_page() or forgot_password_page.is_reset_password_page()
     
 
     @allure.title("1.3: Кнопка показать/скрыть пароль делает поле активным")
     def test_eye_button_activates_password_field(self, driver):
         """Тест проверяет, что кнопка глаза меняет класс контейнера и тип поля."""
         forgot_password_page = ForgotPassword(driver)
-        driver.get(FORGOT_PASSWORD_URL)
+        
+        # Переходим на страницу восстановления пароля через метод страницы
+        forgot_password_page.navigate_to_forgot_password()
         
         forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
         
@@ -56,10 +58,8 @@ class TestForgotPassword:
         browser_name = driver.capabilities['browserName']
         forgot_password_page.click_restore_button(browser_name)
         
-        # Ждем перехода на страницу сброса пароля
-        WebDriverWait(driver, 10).until(
-            lambda d: "reset-password" in d.current_url
-        )
+        # Ждем перехода на страницу сброса пароля через метод страницы
+        forgot_password_page.wait_for_reset_password_page(10)
         
         # Проверяем состояние ДО клика
         type_before = forgot_password_page.get_password_field_type()

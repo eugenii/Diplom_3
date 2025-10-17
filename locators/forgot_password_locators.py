@@ -1,4 +1,3 @@
-# [file name]: locators/forgot_password_locators.py
 from selenium.webdriver.common.by import By
 
 class ForgotPasswordLocators:

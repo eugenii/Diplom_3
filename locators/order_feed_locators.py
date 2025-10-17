@@ -1,4 +1,3 @@
-# [file name]: locators/order_feed_locators.py
 from selenium.webdriver.common.by import By
 
 class OrderFeedLocators:

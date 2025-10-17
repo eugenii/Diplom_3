@@ -34,9 +34,21 @@ class BasePage:
         element = self.find_element(locator)
         return element.text
     
-    def wait_for_url_contains(self, text):
+    def get_current_url(self):
+        """Получить текущий URL."""
+        return self.driver.current_url
+
+    def navigate_to(self, url):
+        """Перейти по указанному URL."""
+        self.driver.get(url)
+
+    def is_url_contains(self, text):
+        """Проверить, что текущий URL содержит текст (без ожидания)."""
+        return text in self.driver.current_url
+    
+    def wait_for_url_contains(self, text, timeout=10):
         """Ожидать, что URL содержит текст"""
-        self.wait.until(EC.url_contains(text))
+        WebDriverWait(self.driver, timeout).until(EC.url_contains(text))
     
     def is_element_visible(self, locator):
         """Проверить, что элемент видим"""
@@ -87,17 +99,14 @@ class BasePage:
             WebDriverWait(self.driver, timeout).until(
                 EC.invisibility_of_element_located((By.CLASS_NAME, "Modal_modal_overlay__x2ZCr"))
             )
-            print("✅ Модальное окно исчезло")
             return True
         except TimeoutException:
             # Если модальное окно не появилось или не исчезло - это нормально
-            print("ℹ️ Модальное окно не найдено или не исчезло")
             return False
 
     def safe_click_with_modal_check(self, locator, browser_name="chrome"):
         """Безопасный клик с проверкой модального окна для Firefox."""
         if browser_name.lower() == "firefox":
-            print(f"🦊 Firefox: Обработка клика для {locator}")
             
             # Для Firefox используем комбинированный подход
             # 1. Ждем исчезновения модального окна
@@ -105,7 +114,6 @@ class BasePage:
             
             # 2. Всегда используем JS клик для надежности
             self.click_element_js(locator)
-            print("✅ JS клик выполнен успешно")
             
         else:
             # Для Chrome обычный клик

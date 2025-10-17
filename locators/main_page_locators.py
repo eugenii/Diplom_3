@@ -25,7 +25,7 @@ class MainPageLocators:
     # Конструктор бургера
     BURGER_CONSTRUCTOR = (By.XPATH, "//section[contains(@class, 'BurgerConstructor_basket')]")
 
-        # Ссылки для навигации
+    # Ссылки для навигации
     CONSTRUCTOR_LINK = (By.XPATH, "//p[text()='Конструктор']")
     ORDER_FEED_LINK = (By.XPATH, "//p[text()='Лента Заказов']")
     

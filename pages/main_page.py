@@ -1,8 +1,9 @@
-from .base_page import BasePage
-from locators.main_page_locators import MainPageLocators
 import allure
 
 from selenium.webdriver import ActionChains
+
+from .base_page import BasePage
+from locators.main_page_locators import MainPageLocators
 
 
 class MainPage(BasePage):
@@ -10,16 +11,17 @@ class MainPage(BasePage):
     
     def __init__(self, driver):
         super().__init__(driver)
-    
+
     @allure.step("Кликнуть на 'Конструктор'")
     def click_constructor_button(self):
         """Кликнуть на кнопку конструктора в хедере."""
-        self.click_element(MainPageLocators.CONSTRUCTOR_BUTTON)
+        return self.click_element(MainPageLocators.CONSTRUCTOR_BUTTON, use_js=True)
     
     @allure.step("Кликнуть на 'Лента Заказов'")
     def click_order_feed_button(self):
         """Кликнуть на кнопку ленты заказов в хедере."""
-        self.click_element(MainPageLocators.ORDER_FEED_BUTTON)
+        return self.click_element(MainPageLocators.ORDER_FEED_BUTTON, use_js=True)
+    
     
     @allure.step("Проверить, что открыт конструктор")
     def is_constructor_opened(self):
@@ -38,7 +40,7 @@ class MainPage(BasePage):
     @allure.step("Кликнуть на раздел 'Булки'")
     def click_buns_section(self):
         """Кликнуть на раздел булок в конструкторе."""
-        self.click_element(MainPageLocators.BUNS_SECTION)
+        return self.click_element(MainPageLocators.BUNS_SECTION, use_js=True)
     
     @allure.step("Кликнуть на раздел 'Соусы'")
     def click_sauces_section(self):
@@ -63,7 +65,6 @@ class MainPage(BasePage):
     def go_to_main_page(self):
         """Перейти на главную страницу."""
         self.driver.get(self.base_url)
-
 
     @allure.step("Перетащить элемент в конструктор")
     def drag_element_to_constructor(self, element, target_locator):
@@ -90,3 +91,14 @@ class MainPage(BasePage):
         filling = self.find_element(MainPageLocators.FILLING_INGREDIENT)
         constructor_area = self.find_element(MainPageLocators.CONSTRUCTOR_AREA)
         ActionChains(self.driver).drag_and_drop(filling, constructor_area).perform()
+
+    @allure.step("Закрыть модальное окно если есть")
+    def close_modal_if_present(self):
+        """Закрывает модальное окно если оно есть (для Firefox)"""
+        try:
+            modal_overlay = self.driver.find_element(By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]")
+            close_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
+            close_button.click()
+            return True
+        except:
+            return False

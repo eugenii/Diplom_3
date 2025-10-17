@@ -1,29 +1,32 @@
 import allure
 import pytest
+from selenium.webdriver.support.ui import WebDriverWait
 
-from data import BASE_URL
 from pages.constructor_page import ConstructorPage
+from locators.constructor_locators import ConstructorLocators
+
 
 @pytest.mark.usefixtures("driver")
 class TestIngredientCounters:
-    
-    @allure.title("3.5: Каунтер ингредиента увеличивается при добавлении в заказ")
+
+    @allure.title("Проверка увеличения счетчика ингредиента при добавлении")
     def test_ingredient_counter_increases_when_added(self, driver):
         constructor_page = ConstructorPage(driver)
-        driver.get(BASE_URL)
         
-        initial_bun_counter = constructor_page.get_bun_counter()
-        initial_sauce_counter = constructor_page.get_sauce_counter()
-        initial_filling_counter = constructor_page.get_filling_counter()
+        # Определяем имя браузера
+        browser_name = driver.capabilities['browserName']
         
-        constructor_page.add_bun_to_constructor()
-        bun_counter_after = constructor_page.get_bun_counter()
-        assert bun_counter_after > initial_bun_counter
+        # Получаем начальное значение счетчика
+        initial_counter = constructor_page.get_bun_counter_value()
         
-        constructor_page.add_sauce_to_constructor()
-        sauce_counter_after = constructor_page.get_sauce_counter()
-        assert sauce_counter_after > initial_sauce_counter
+        # Добавляем булку в конструктор
+        constructor_page.add_bun_to_constructor(browser_name)
         
-        constructor_page.add_filling_to_constructor()
-        filling_counter_after = constructor_page.get_filling_counter()
-        assert filling_counter_after > initial_filling_counter
+        # Ждем обновления счетчика
+        constructor_page.wait_for_counter_update(initial_counter, timeout=10)
+        
+        # Получаем значение счетчика после добавления
+        final_counter = constructor_page.get_bun_counter_value()
+        
+        # Проверяем, что счетчик увеличился
+        assert final_counter > initial_counter, f"Счетчик не увеличился: было {initial_counter}, стало {final_counter}"

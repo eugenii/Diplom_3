@@ -1,5 +1,6 @@
 import allure
 import pytest
+
 from data import LOGIN_URL
 from data import TestUser
 from pages.login_page import LoginPage

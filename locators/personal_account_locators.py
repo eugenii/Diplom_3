@@ -1,5 +1,3 @@
-# [file name]: locators/personal_account_locators.py
-# [file content begin]
 from selenium.webdriver.common.by import By
 
 class PersonalAccountLocators:
@@ -35,5 +33,4 @@ class PersonalAccountLocators:
     LOGIN_BUTTON_MAIN = (By.XPATH, "//button[text()='Войти в аккаунт']")
     
     # Общие проверки для личного кабинета
-    ACCOUNT_PAGE_INDICATOR = (By.XPATH, "//a[text()='Профиль']")  # Добавили отсутствующий локатор
-# [file content end]
+    ACCOUNT_PAGE_INDICATOR = (By.XPATH, "//a[text()='Профиль']")

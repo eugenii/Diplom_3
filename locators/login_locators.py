@@ -14,5 +14,5 @@ class LoginLocators:
     EMAIL_INPUT = (By.XPATH, "//input[@type='text']")
     LOGIN_BUTTON = (By.XPATH, "//button[text()='Войти']")
 
-        # Заголовок страницы логина
+    # Заголовок страницы логина
     LOGIN_HEADER = (By.XPATH, "//h2[text()='Вход']")

@@ -32,14 +32,12 @@ class TestOrderFeed:
             first_order = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable(OrderFeedLocators.FIRST_ORDER_LINK)
             )
-            print(f"✅ Найден заказ: {first_order.text[:50]}...")
         except:
             try:
                 # Пробуем альтернативный локатор
                 first_order = WebDriverWait(driver, 5).until(
                     EC.element_to_be_clickable(OrderFeedLocators.FIRST_ORDER_CARD)
                 )
-                print(f"✅ Найден заказ (карточка): {first_order.text[:50]}...")
             except:
                 pytest.skip("Не удалось найти кликабельный заказ в ленте")
         
@@ -52,7 +50,6 @@ class TestOrderFeed:
                 EC.visibility_of_element_located(OrderFeedLocators.ORDER_DETAILS_MODAL)
             )
             assert order_details_modal.is_displayed(), "Модальное окно не отображается"
-            print("✅ Модальное окно с деталями заказа успешно открылось")
             
             # Закрываем модальное окно для чистоты теста
             try:
@@ -63,12 +60,10 @@ class TestOrderFeed:
                 WebDriverWait(driver, 5).until(
                     EC.invisibility_of_element_located(OrderFeedLocators.ORDER_DETAILS_MODAL)
                 )
-                print("✅ Модальное окно успешно закрыто")
             except:
-                print("⚠️ Не удалось закрыть модальное окно")
+                print("Не удалось закрыть модальное окно")
                 
         except Exception as e:
-            print(f"❌ Модальное окно не открылось: {e}")
             pytest.skip("Функционал открытия деталей заказа не работает в текущей среде")
     
     @allure.title("4.2: Заказы пользователя отображаются в ленте заказов")

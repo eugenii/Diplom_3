@@ -1,8 +1,8 @@
-# [file name]: pages/personal_account.py
-# [file content begin]
+import allure
+
 from .base_page import BasePage
 from locators.personal_account_locators import PersonalAccountLocators
-import allure
+
 
 class PersonalAccount(BasePage):
     """Класс для работы с личным кабинетом."""
@@ -13,8 +13,8 @@ class PersonalAccount(BasePage):
     @allure.step("Кликнуть на 'Личный кабинет'")
     def click_personal_account_button(self):
         """Кликнуть на кнопку личного кабинета в хедере."""
-        self.click_element(PersonalAccountLocators.PERSONAL_ACCOUNT_BUTTON)
-    
+        return self.click_element(PersonalAccountLocators.PERSONAL_ACCOUNT_BUTTON, use_js=True)
+
     @allure.step("Кликнуть на 'Профиль'")
     def click_profile_section(self):
         """Кликнуть на раздел профиля."""
@@ -24,11 +24,11 @@ class PersonalAccount(BasePage):
     def click_order_history_section(self):
         """Кликнуть на раздел истории заказов."""
         self.click_element(PersonalAccountLocators.ORDER_HISTORY_SECTION)
-    
+
     @allure.step("Кликнуть на 'Выход'")
     def click_logout_button(self):
         """Кликнуть на кнопку выхода."""
-        self.click_element(PersonalAccountLocators.LOGOUT_BUTTON)
+        return self.click_element(PersonalAccountLocators.LOGOUT_BUTTON, use_js=True)
     
     @allure.step("Проверить, что открыт профиль")
     def is_profile_page(self):
@@ -66,4 +66,14 @@ class PersonalAccount(BasePage):
     def click_login_button_main(self):
         """Кликнуть на кнопку входа на главной странице."""
         self.click_element(PersonalAccountLocators.LOGIN_BUTTON_MAIN)
-# [file content end]
+
+    @allure.step("Закрыть модальное окно если есть")
+    def close_modal_if_present(self):
+        """Закрывает модальное окно если оно есть (для Firefox)"""
+        try:
+            modal_overlay = self.driver.find_element(By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]")
+            close_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
+            close_button.click()
+            return True
+        except:
+            return False

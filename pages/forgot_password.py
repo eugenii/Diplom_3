@@ -1,16 +1,20 @@
-# [file name]: pages/forgot_password.py
-from .base_page import BasePage
-from locators.forgot_password_locators import ForgotPasswordLocators
 import allure
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+
+from .base_page import BasePage
+from locators.forgot_password_locators import ForgotPasswordLocators
 
 class ForgotPassword(BasePage):
     """Класс для работы со страницей восстановления пароля."""
     
     def __init__(self, driver):
         super().__init__(driver)
+
+    @allure.step("Перейти на страницу восстановления пароля")
+    def navigate_to_forgot_password(self):
+        self.navigate_to("https://stellarburgers.education-services.ru/forgot-password")
     
     @allure.step("Ввести email")
     def set_email(self, email):
@@ -67,7 +71,6 @@ class ForgotPassword(BasePage):
             container_classes = self.get_password_container_classes()
             return "input_type_text" in container_classes and "input_status_active" in container_classes
         except Exception as e:
-            print(f"Ошибка при проверке поля пароля: {e}")
             return False
     
     @allure.step("Получить тип поля пароля")

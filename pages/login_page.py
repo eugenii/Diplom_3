@@ -1,6 +1,7 @@
+import allure
+
 from .base_page import BasePage
 from locators.login_locators import LoginLocators
-import allure
 
 
 class LoginPage(BasePage):
@@ -22,3 +23,11 @@ class LoginPage(BasePage):
     @allure.step("Кликнуть 'Восстановить пароль'")
     def click_forgot_password_button(self, browser_name="chrome"):
         self.safe_click_with_modal_check(LoginLocators.FORGOT_PASSWORD_BUTTON, browser_name)
+
+    @allure.step("Перейти на страницу логина")
+    def navigate_to_login(self):
+        self.navigate_to("https://stellarburgers.education-services.ru/login")
+
+    @allure.step("Проверить, что находимся на странице логина")
+    def is_login_page(self):
+        return self.is_url_contains("login")
