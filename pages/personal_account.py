@@ -13,7 +13,7 @@ class PersonalAccount(BasePage):
     @allure.step("Кликнуть на 'Личный кабинет'")
     def click_personal_account_button(self):
         """Кликнуть на кнопку личного кабинета в хедере."""
-        return self.click_element(PersonalAccountLocators.PERSONAL_ACCOUNT_BUTTON, use_js=True)
+        return self.safe_click(PersonalAccountLocators.PERSONAL_ACCOUNT_BUTTON)
 
     @allure.step("Кликнуть на 'Профиль'")
     def click_profile_section(self):
@@ -28,7 +28,7 @@ class PersonalAccount(BasePage):
     @allure.step("Кликнуть на 'Выход'")
     def click_logout_button(self):
         """Кликнуть на кнопку выхода."""
-        return self.click_element(PersonalAccountLocators.LOGOUT_BUTTON, use_js=True)
+        return self.safe_click(PersonalAccountLocators.LOGOUT_BUTTON, use_js=True)
     
     @allure.step("Проверить, что открыт профиль")
     def is_profile_page(self):
@@ -71,7 +71,7 @@ class PersonalAccount(BasePage):
     def close_modal_if_present(self):
         """Закрывает модальное окно если оно есть (для Firefox)"""
         try:
-            modal_overlay = self.driver.find_element(By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]")
+            # modal_overlay = self.driver.find_element(By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]")
             close_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
             close_button.click()
             return True

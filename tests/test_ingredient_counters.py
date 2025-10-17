@@ -1,10 +1,7 @@
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.constructor_page import ConstructorPage
-from locators.constructor_locators import ConstructorLocators
-
 
 @pytest.mark.usefixtures("driver")
 class TestIngredientCounters:

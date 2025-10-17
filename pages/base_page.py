@@ -73,7 +73,7 @@ class BasePage:
         try:
             counter = self.find_element(counter_locator)
             return int(counter.text)
-        except:
+        except Exception as e:
             return 0
         
     def click_element_js(self, locator):
@@ -118,3 +118,15 @@ class BasePage:
         else:
             # Для Chrome обычный клик
             self.click_element(locator)
+
+    def get_browser_name(self):
+        """Получить имя браузера."""
+        return self.driver.capabilities['browserName']
+    
+    def navigate_to_home(self):
+        """Перейти на главную страницу."""
+        self.driver.get(self.base_url)
+
+    def refresh_page(self):
+        """Обновить текущую страницу."""
+        self.driver.refresh()

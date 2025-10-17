@@ -16,9 +16,8 @@ class TestForgotPassword:
         # Переходим на страницу логина через метод страницы
         login_page.navigate_to_login()
         
-        # Определяем имя браузера для обработки модального окна
-        browser_name = driver.capabilities['browserName']
-        login_page.click_forgot_password_button(browser_name)
+        # Переходим на страницу логина через метод страницы
+        login_page.click_forgot_password_button()
         
         # Проверяем через методы страниц
         assert forgot_password_page.is_on_forgot_password_page()
@@ -33,9 +32,8 @@ class TestForgotPassword:
         
         forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
         
-        # Определяем имя браузера для обработки модального окна
-        browser_name = driver.capabilities['browserName']
-        forgot_password_page.click_restore_button(browser_name)
+        # Кликаем через метод страницы (браузер определяется внутри)
+        forgot_password_page.click_restore_button()
         
         # Ждем перехода на страницу сброса пароля через метод страницы
         forgot_password_page.wait_for_reset_password_page(10)
@@ -54,9 +52,8 @@ class TestForgotPassword:
         
         forgot_password_page.set_email(TestForgotPasswordData.EXISTING_EMAIL)
         
-        # Определяем имя браузера для обработки модального окна
-        browser_name = driver.capabilities['browserName']
-        forgot_password_page.click_restore_button(browser_name)
+        # Кликаем через метод страницы (браузер определяется внутри)
+        forgot_password_page.click_restore_button()
         
         # Ждем перехода на страницу сброса пароля через метод страницы
         forgot_password_page.wait_for_reset_password_page(10)

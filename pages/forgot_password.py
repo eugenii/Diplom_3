@@ -22,6 +22,7 @@ class ForgotPassword(BasePage):
     
     @allure.step("Кликнуть 'Восстановить'")
     def click_restore_button(self, browser_name="chrome"):
+        browser_name = self.get_browser_name()
         self.safe_click_with_modal_check(ForgotPasswordLocators.RESTORE_BUTTON, browser_name)
     
     @allure.step("Проверить видимость поля email")

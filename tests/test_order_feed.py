@@ -1,13 +1,12 @@
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
 from locators.main_page_locators import MainPageLocators
 from locators.order_feed_locators import OrderFeedLocators
 from pages.main_page import MainPage
 from pages.personal_account import PersonalAccount
+from pages.order_feed_page import OrderFeedPage
 
 
 class TestOrderFeed:
@@ -15,164 +14,119 @@ class TestOrderFeed:
     @allure.title("4.1: Клик на заказ открывает модальное окно с деталями")
     def test_order_details_modal(self, driver, login_user):
         main_page = MainPage(driver)
+        order_feed_page = OrderFeedPage(driver)
+        
         main_page.click_order_feed_button()
         
-        # Ждем загрузки ленты заказов
-        WebDriverWait(driver, 15).until(
-            EC.visibility_of_element_located(OrderFeedLocators.ORDER_FEED_SECTION)
-        )
+        # Ждем загрузки ленты заказов через метод страницы
+        order_feed_page.wait_for_order_feed_loaded(15)
         
-        # Ждем появления заказов
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located(OrderFeedLocators.ORDER_LINKS)
-        )
+        # Ждем появления заказов через метод страницы
+        order_feed_page.wait_for_orders_appear(10)
         
-        # Используем самый надежный локатор - ссылка заказа
-        try:
-            first_order = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(OrderFeedLocators.FIRST_ORDER_LINK)
-            )
-        except:
-            try:
-                # Пробуем альтернативный локатор
-                first_order = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable(OrderFeedLocators.FIRST_ORDER_CARD)
-                )
-            except:
-                pytest.skip("Не удалось найти кликабельный заказ в ленте")
+        # Кликаем на первый заказ через метод страницы
+        order_clicked = order_feed_page.click_first_order()
         
-        # Кликаем на заказ
-        first_order.click()
+        if not order_clicked:
+            pytest.skip("Не удалось найти кликабельный заказ в ленте")
         
-        # Ждем появления модального окна
-        try:
-            order_details_modal = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located(OrderFeedLocators.ORDER_DETAILS_MODAL)
-            )
-            assert order_details_modal.is_displayed(), "Модальное окно не отображается"
-            
-            # Закрываем модальное окно для чистоты теста
-            try:
-                close_button = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable(OrderFeedLocators.MODAL_CLOSE_BUTTON)
-                )
-                close_button.click()
-                WebDriverWait(driver, 5).until(
-                    EC.invisibility_of_element_located(OrderFeedLocators.ORDER_DETAILS_MODAL)
-                )
-            except:
-                print("Не удалось закрыть модальное окно")
-                
-        except Exception as e:
+        # Проверяем модальное окно через метод страницы
+        modal_opened = order_feed_page.is_order_modal_opened(10)
+        
+        if not modal_opened:
             pytest.skip("Функционал открытия деталей заказа не работает в текущей среде")
+        
+        assert modal_opened, "Модальное окно не отобразилось"
+        
+        # Закрываем модальное окно для чистоты теста
+        order_feed_page.close_order_modal(5)
     
     @allure.title("4.2: Заказы пользователя отображаются в ленте заказов")
     def test_user_orders_in_feed(self, driver, login_user):
         personal_account = PersonalAccount(driver)
         main_page = MainPage(driver)
+        order_feed_page = OrderFeedPage(driver)
         
         personal_account.click_personal_account_button()
         personal_account.click_order_history_section()
         
-        # Ждем появления заказов в истории
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '#')]"))
-        )
-        
-        history_orders = driver.find_elements(By.XPATH, "//*[contains(text(), '#')]")
-        history_count = len(history_orders)
+        # Получаем количество заказов в истории через метод страницы
+        history_count = order_feed_page.get_orders_count_by_xpath("//*[contains(text(), '#')]")
         
         main_page.click_order_feed_button()
         
-        # Ждем загрузки ленты заказов
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(OrderFeedLocators.ORDER_FEED_SECTION)
-        )
+        # Ждем загрузки ленты заказов через метод страницы
+        order_feed_page.wait_for_order_feed_loaded(10)
         
-        # Ждем появления заказов в ленте
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), '#')]"))
-        )
-        
-        feed_orders = driver.find_elements(By.XPATH, "//*[contains(text(), '#')]")
-        feed_count = len(feed_orders)
+        # Получаем количество заказов в ленте через метод страницы
+        feed_count = order_feed_page.get_orders_count_by_xpath("//*[contains(text(), '#')]")
         
         assert feed_count > 0
     
     @allure.title("4.3: Счётчик 'Выполнено за всё время' увеличивается")
     def test_total_orders_counter_increases(self, driver, login_user):
         main_page = MainPage(driver)
+        order_feed_page = OrderFeedPage(driver)
+        
         main_page.click_order_feed_button()
         
-        # Ждем загрузки ленты
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(OrderFeedLocators.ORDER_FEED_SECTION)
-        )
+        # Ждем загрузки ленты через метод страницы
+        order_feed_page.wait_for_order_feed_loaded(10)
         
-        total_orders_before = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(OrderFeedLocators.TOTAL_ORDERS_COUNT)
-        )
-        total_before = int(total_orders_before.text)
+        # Получаем начальное количество заказов через метод страницы
+        total_before = order_feed_page.get_total_orders_count()
         
         main_page.click_constructor_button()
         main_page.add_bun_to_constructor()
         main_page.add_sauce_to_constructor()
         
-        order_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(MainPageLocators.ORDER_BUTTON)
-        )
+        order_button = main_page.wait_for_element_clickable(MainPageLocators.ORDER_BUTTON, 10)
         order_button.click()
         
-        WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.XPATH, "//h2[contains(@class, 'Modal_modal__title')]"))
-        )
+        main_page.wait_for_element_visible((By.XPATH, "//h2[contains(@class, 'Modal_modal__title')]"), 20)
         
-        driver.refresh()
+        # Обновляем страницу через метод страницы
+        main_page.refresh_page()
         main_page.click_order_feed_button()
         
-        WebDriverWait(driver, 15).until(
-            lambda d: int(d.find_element(*OrderFeedLocators.TOTAL_ORDERS_COUNT).text) > total_before
-        )
+        # Ждем увеличения счетчика через метод страницы
+        order_feed_page.wait_for_total_orders_increase(total_before, 15)
         
-        total_orders_after = driver.find_element(*OrderFeedLocators.TOTAL_ORDERS_COUNT)
-        total_after = int(total_orders_after.text)
+        # Получаем конечное количество заказов через метод страницы
+        total_after = order_feed_page.get_total_orders_count()
+        
         assert total_after > total_before
     
     @allure.title("4.4: Счётчик 'Выполнено за сегодня' увеличивается")
     def test_today_orders_counter_increases(self, driver, login_user):
         main_page = MainPage(driver)
+        order_feed_page = OrderFeedPage(driver)
+        
         main_page.click_order_feed_button()
         
-        # Ждем загрузки ленты
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(OrderFeedLocators.ORDER_FEED_SECTION)
-        )
+        # Ждем загрузки ленты через метод страницы
+        order_feed_page.wait_for_order_feed_loaded(10)
         
-        today_orders_before = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(OrderFeedLocators.TODAY_ORDERS_COUNT)
-        )
-        today_before = int(today_orders_before.text)
+        # Получаем начальное количество заказов за сегодня через метод страницы
+        today_before = order_feed_page.get_today_orders_count()
         
         main_page.click_constructor_button()
         main_page.add_bun_to_constructor()
         main_page.add_sauce_to_constructor()
         
-        order_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(MainPageLocators.ORDER_BUTTON)
-        )
+        order_button = main_page.wait_for_element_clickable(MainPageLocators.ORDER_BUTTON, 10)
         order_button.click()
         
-        WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.XPATH, "//h2[contains(@class, 'Modal_modal__title')]"))
-        )
+        main_page.wait_for_element_visible((By.XPATH, "//h2[contains(@class, 'Modal_modal__title')]"), 20)
         
-        driver.refresh()
+        # Обновляем страницу через метод страницы
+        main_page.refresh_page()
         main_page.click_order_feed_button()
         
-        WebDriverWait(driver, 15).until(
-            lambda d: int(d.find_element(*OrderFeedLocators.TODAY_ORDERS_COUNT).text) > today_before
-        )
+        # Ждем увеличения счетчика через метод страницы
+        order_feed_page.wait_for_today_orders_increase(today_before, 15)
         
-        today_orders_after = driver.find_element(*OrderFeedLocators.TODAY_ORDERS_COUNT)
-        today_after = int(today_orders_after.text)
+        # Получаем конечное количество заказов через метод страницы
+        today_after = order_feed_page.get_today_orders_count()
+        
         assert today_after > today_before

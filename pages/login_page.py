@@ -21,7 +21,8 @@ class LoginPage(BasePage):
         self.click_element(LoginLocators.LOGIN_BUTTON)
     
     @allure.step("Кликнуть 'Восстановить пароль'")
-    def click_forgot_password_button(self, browser_name="chrome"):
+    def click_forgot_password_button(self):
+        browser_name = self.get_browser_name()
         self.safe_click_with_modal_check(LoginLocators.FORGOT_PASSWORD_BUTTON, browser_name)
 
     @allure.step("Перейти на страницу логина")

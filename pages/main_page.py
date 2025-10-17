@@ -1,7 +1,5 @@
 import allure
-
-from selenium.webdriver import ActionChains
-
+from selenium.webdriver.common.by import By
 from .base_page import BasePage
 from locators.main_page_locators import MainPageLocators
 
@@ -12,16 +10,30 @@ class MainPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
+    @allure.step("Перейти на главную страницу")
+    def navigate_to_main_page(self):
+        """Перейти на главную страницу через метод base_page."""
+        self.navigate_to_home()
+    
+    @allure.step("Проверить, что находимся на главной странице")
+    def is_main_page(self):
+        """Проверить, что находимся на главной странице."""
+        return self.is_url_contains(self.base_url) or self.is_element_visible(MainPageLocators.ORDER_BUTTON)
+    
+    @allure.step("Проверить URL главной страницы")
+    def is_on_main_page_url(self):
+        """Проверить, что текущий URL соответствует главной странице."""
+        return self.base_url in self.get_current_url()
+
     @allure.step("Кликнуть на 'Конструктор'")
     def click_constructor_button(self):
         """Кликнуть на кнопку конструктора в хедере."""
-        return self.click_element(MainPageLocators.CONSTRUCTOR_BUTTON, use_js=True)
+        return self.safe_click(MainPageLocators.CONSTRUCTOR_BUTTON, use_js=True)
     
     @allure.step("Кликнуть на 'Лента Заказов'")
     def click_order_feed_button(self):
         """Кликнуть на кнопку ленты заказов в хедере."""
-        return self.click_element(MainPageLocators.ORDER_FEED_BUTTON, use_js=True)
-    
+        return self.safe_click(MainPageLocators.ORDER_FEED_BUTTON, use_js=True)
     
     @allure.step("Проверить, что открыт конструктор")
     def is_constructor_opened(self):
@@ -40,7 +52,7 @@ class MainPage(BasePage):
     @allure.step("Кликнуть на раздел 'Булки'")
     def click_buns_section(self):
         """Кликнуть на раздел булок в конструкторе."""
-        return self.click_element(MainPageLocators.BUNS_SECTION, use_js=True)
+        return self.safe_click(MainPageLocators.BUNS_SECTION, use_js=True)
     
     @allure.step("Кликнуть на раздел 'Соусы'")
     def click_sauces_section(self):
@@ -61,16 +73,11 @@ class MainPage(BasePage):
         except:
             return ""
     
-    @allure.step("Перейти на главную страницу")
-    def go_to_main_page(self):
-        """Перейти на главную страницу."""
-        self.driver.get(self.base_url)
-
     @allure.step("Перетащить элемент в конструктор")
     def drag_element_to_constructor(self, element, target_locator):
         """Перетащить элемент в зону конструктора."""
         target = self.find_element(target_locator)
-        ActionChains(self.driver).drag_and_drop(element, target).perform()
+        self.actions.drag_and_drop(element, target).perform()
     
     @allure.step("Добавить булку в конструктор")
     def add_bun_to_constructor(self):
@@ -83,22 +90,33 @@ class MainPage(BasePage):
         """Добавить соус в конструктор."""
         sauce = self.find_element(MainPageLocators.SAUCE_INGREDIENT)
         self.drag_element_to_constructor(sauce, MainPageLocators.CONSTRUCTOR_AREA)
-
     
     @allure.step("Добавить начинку в конструктор")
     def add_filling_to_constructor(self):
         """Добавить начинку в конструктор."""
         filling = self.find_element(MainPageLocators.FILLING_INGREDIENT)
-        constructor_area = self.find_element(MainPageLocators.CONSTRUCTOR_AREA)
-        ActionChains(self.driver).drag_and_drop(filling, constructor_area).perform()
+        self.drag_element_to_constructor(filling, MainPageLocators.CONSTRUCTOR_AREA)
 
     @allure.step("Закрыть модальное окно если есть")
     def close_modal_if_present(self):
-        """Закрывает модальное окно если оно есть (для Firefox)"""
+        """Закрывает модальное окно если оно есть (для Firefox)."""
         try:
-            modal_overlay = self.driver.find_element(By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]")
-            close_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]")
+            # Используем методы base_page вместо прямого доступа к драйверу
+            modal_overlay = self.find_element((By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]"))
+            close_button = self.find_element((By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]"))
             close_button.click()
             return True
         except:
             return False
+        
+    @allure.step("Дождаться, пока элемент станет кликабельным")
+    def wait_for_element_clickable(self, locator, timeout=10):
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        return WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
+
+    @allure.step("Дождаться, пока элемент станет видимым")
+    def wait_for_element_visible(self, locator, timeout=10):
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        return WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
