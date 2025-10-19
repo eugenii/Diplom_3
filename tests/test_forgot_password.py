@@ -1,3 +1,4 @@
+# test_forgot_password.py - заменяем wait_for_reset_password_page на wait_for_url_contains
 import allure
 import pytest
 
@@ -16,11 +17,11 @@ class TestForgotPassword:
         # Переходим на страницу логина через метод страницы
         login_page.navigate_to_login()
         
-        # Переходим на страницу логина через метод страницы
+        # Переходим на страницу восстановления пароля
         login_page.click_forgot_password_button()
         
         # Проверяем через методы страниц
-        assert forgot_password_page.is_on_forgot_password_page()
+        assert forgot_password_page.is_forgot_password_page()
         assert forgot_password_page.is_email_field_visible()
     
     @allure.title("1.2: Ввод почты и восстановление пароля")
@@ -35,11 +36,11 @@ class TestForgotPassword:
         # Кликаем через метод страницы (браузер определяется внутри)
         forgot_password_page.click_restore_button()
         
-        # Ждем перехода на страницу сброса пароля через метод страницы
-        forgot_password_page.wait_for_reset_password_page(10)
+        # Ждем перехода на страницу сброса пароля через метод base_page
+        forgot_password_page.wait_for_url_contains("reset-password", 10)
         
-        # Проверяем через методы страниц
-        assert forgot_password_page.is_on_reset_password_page() or forgot_password_page.is_reset_password_page()
+        # Проверяем через существующие методы
+        assert forgot_password_page.is_reset_password_page()
     
 
     @allure.title("1.3: Кнопка показать/скрыть пароль делает поле активным")
@@ -55,8 +56,8 @@ class TestForgotPassword:
         # Кликаем через метод страницы (браузер определяется внутри)
         forgot_password_page.click_restore_button()
         
-        # Ждем перехода на страницу сброса пароля через метод страницы
-        forgot_password_page.wait_for_reset_password_page(10)
+        # Ждем перехода на страницу сброса пароля через метод base_page
+        forgot_password_page.wait_for_url_contains("reset-password", 10)
         
         # Проверяем состояние ДО клика
         type_before = forgot_password_page.get_password_field_type()
@@ -67,7 +68,7 @@ class TestForgotPassword:
         assert type_before == "password", f"Тип поля должен быть 'password', но: {type_before}"
         assert "input_type_password" in container_before, f"Контейнер должен содержать input_type_password, но: {container_before}"
         
-        # Кликаем на кнопку глаза
+        # Кликаем на кнопку глаза (теперь используется безопасный клик)
         forgot_password_page.click_show_hide_password_button()
         
         # Ждем изменения состояния с явными ожиданиями (вместо time.sleep)

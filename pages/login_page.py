@@ -1,3 +1,4 @@
+# login_page.py - добавляем безопасные клики
 import allure
 
 from .base_page import BasePage
@@ -18,7 +19,9 @@ class LoginPage(BasePage):
     
     @allure.step("Кликнуть кнопку Войти")
     def click_login_button(self):
-        self.click_element(LoginLocators.LOGIN_BUTTON)
+        # Используем безопасный клик для Firefox
+        browser_name = self.get_browser_name()
+        self.safe_click_with_modal_check(LoginLocators.LOGIN_BUTTON, browser_name)
     
     @allure.step("Кликнуть 'Восстановить пароль'")
     def click_forgot_password_button(self):

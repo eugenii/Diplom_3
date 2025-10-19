@@ -1,10 +1,7 @@
+# test_order_flow.py - убираем WebDriverWait
 import allure
 import pytest
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 
-from locators.main_page_locators import MainPageLocators
 from pages.main_page import MainPage
 
 class TestOrderFlow:
@@ -16,12 +13,8 @@ class TestOrderFlow:
         main_page.add_bun_to_constructor()
         main_page.add_sauce_to_constructor()
         
-        order_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(MainPageLocators.ORDER_BUTTON)
-        )
-        order_button.click()
+        # Заменяем WebDriverWait на метод Page Object
+        main_page.click_order_button()
         
-        order_modal = WebDriverWait(driver, 20).until(
-            EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'Modal_modal__container')]"))
-        )
-        assert order_modal.is_displayed()
+        # Заменяем WebDriverWait на метод Page Object
+        assert main_page.is_order_modal_displayed()

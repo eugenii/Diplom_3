@@ -1,3 +1,4 @@
+# test_personal_account.py - используем существующие методы
 import allure
 import pytest
 
@@ -11,7 +12,7 @@ class TestPersonalAccount:
     
     def _login_user(self, driver):
         login_page = LoginPage(driver)
-        driver.get(LOGIN_URL)
+        login_page.navigate_to_login()
         login_page.set_email(TestUser.EMAIL)
         login_page.set_password(TestUser.PASSWORD)
         login_page.click_login_button()
@@ -22,7 +23,8 @@ class TestPersonalAccount:
         personal_account = self._login_user(driver)
         personal_account.click_personal_account_button()
         
-        assert "account" in driver.current_url
+        # Используем методы из base_page
+        assert personal_account.is_url_contains("account")
         assert personal_account.is_profile_page()
     
     @allure.title("2.2: Переход в раздел «История заказов»")
@@ -39,5 +41,6 @@ class TestPersonalAccount:
         personal_account.click_personal_account_button()
         personal_account.click_logout_button()
         
+        # Используем методы из base_page
         assert personal_account.is_logout_successful()
-        assert "login" in driver.current_url
+        assert personal_account.is_url_contains("login")

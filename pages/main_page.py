@@ -120,3 +120,14 @@ class MainPage(BasePage):
         from selenium.webdriver.support.ui import WebDriverWait
         from selenium.webdriver.support import expected_conditions as EC
         return WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
+    
+    @allure.step("Кликнуть на кнопку оформления заказа")
+    def click_order_button(self):
+        """Кликнуть на кнопку оформления заказа."""
+        browser_name = self.get_browser_name()
+        self.safe_click_with_modal_check(MainPageLocators.ORDER_BUTTON, browser_name)
+
+    @allure.step("Проверить, что модальное окно заказа отображается")
+    def is_order_modal_displayed(self):
+        """Проверить, что модальное окно заказа отображается."""
+        return self.is_element_visible(MainPageLocators.ORDER_MODAL)

@@ -1,3 +1,4 @@
+# test_main_functionality.py - убираем driver.
 import allure
 import pytest
 
@@ -12,7 +13,8 @@ class TestMainFunctionality:
     
     def _login_user(self, driver):
         login_page = LoginPage(driver)
-        driver.get(LOGIN_URL)
+        # Заменяем driver.get на метод Page Object
+        login_page.navigate_to_login()
         login_page.set_email(TestUser.EMAIL)
         login_page.set_password(TestUser.PASSWORD)
         login_page.click_login_button()
@@ -32,9 +34,9 @@ class TestMainFunctionality:
     @allure.title("3.2: Переход по клику на «Лента заказов»")
     def test_go_to_order_feed(self, driver):
         main_page = MainPage(driver)
-        driver.get(BASE_URL)
+        # Заменяем driver.get на метод Page Object
+        main_page.navigate_to_main_page()
         
         main_page.click_order_feed_button()
         
         assert main_page.is_order_feed_opened()
-        # assert "feed" in driver.current_url

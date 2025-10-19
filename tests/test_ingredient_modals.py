@@ -1,3 +1,4 @@
+# test_ingredient_modals.py - заменяем navigate_to_main на navigate_to_home
 import allure
 import pytest
 
@@ -11,8 +12,8 @@ class TestIngredientModals:
     def test_click_ingredient_opens_modal(self, driver):
         ingredient_page = IngredientPage(driver)
         
-        # Переходим на главную страницу через метод страницы
-        ingredient_page.navigate_to_main()
+        # Переходим на главную страницу через метод страницы (исправляем метод)
+        ingredient_page.navigate_to_home()
         
         # Кликаем на ингредиент через метод страницы
         ingredient_page.click_any_ingredient()
@@ -24,8 +25,8 @@ class TestIngredientModals:
     def test_modal_closes_with_close_button(self, driver):
         ingredient_page = IngredientPage(driver)
         
-        # Переходим на главную страницу через метод страницы
-        ingredient_page.navigate_to_main()
+        # Переходим на главную страницу через метод страницы (исправляем метод)
+        ingredient_page.navigate_to_home()
         
         # Открываем модальное окно через метод страницы
         ingredient_page.click_any_ingredient()
