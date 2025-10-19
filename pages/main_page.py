@@ -1,0 +1,133 @@
+import allure
+from selenium.webdriver.common.by import By
+from .base_page import BasePage
+from locators.main_page_locators import MainPageLocators
+
+
+class MainPage(BasePage):
+    """Класс для работы с главной страницей и навигацией."""
+    
+    def __init__(self, driver):
+        super().__init__(driver)
+
+    @allure.step("Перейти на главную страницу")
+    def navigate_to_main_page(self):
+        """Перейти на главную страницу через метод base_page."""
+        self.navigate_to_home()
+    
+    @allure.step("Проверить, что находимся на главной странице")
+    def is_main_page(self):
+        """Проверить, что находимся на главной странице."""
+        return self.is_url_contains(self.base_url) or self.is_element_visible(MainPageLocators.ORDER_BUTTON)
+    
+    @allure.step("Проверить URL главной страницы")
+    def is_on_main_page_url(self):
+        """Проверить, что текущий URL соответствует главной странице."""
+        return self.base_url in self.get_current_url()
+
+    @allure.step("Кликнуть на 'Конструктор'")
+    def click_constructor_button(self):
+        """Кликнуть на кнопку конструктора в хедере."""
+        return self.safe_click(MainPageLocators.CONSTRUCTOR_BUTTON, use_js=True)
+    
+    @allure.step("Кликнуть на 'Лента Заказов'")
+    def click_order_feed_button(self):
+        """Кликнуть на кнопку ленты заказов в хедере."""
+        return self.safe_click(MainPageLocators.ORDER_FEED_BUTTON, use_js=True)
+    
+    @allure.step("Проверить, что открыт конструктор")
+    def is_constructor_opened(self):
+        """Проверить, что открыта страница конструктора."""
+        constructor_visible = self.is_element_visible(MainPageLocators.CONSTRUCTOR_TITLE)
+        ingredients_visible = self.is_element_visible(MainPageLocators.INGREDIENTS_SECTION)
+        burger_constructor_visible = self.is_element_visible(MainPageLocators.BURGER_CONSTRUCTOR)
+        
+        return constructor_visible and ingredients_visible and burger_constructor_visible
+    
+    @allure.step("Проверить, что открыта лента заказов")
+    def is_order_feed_opened(self):
+        """Проверить, что открыта страница ленты заказов."""
+        return self.is_element_visible(MainPageLocators.ORDER_FEED_TITLE)
+    
+    @allure.step("Кликнуть на раздел 'Булки'")
+    def click_buns_section(self):
+        """Кликнуть на раздел булок в конструкторе."""
+        return self.safe_click(MainPageLocators.BUNS_SECTION, use_js=True)
+    
+    @allure.step("Кликнуть на раздел 'Соусы'")
+    def click_sauces_section(self):
+        """Кликнуть на раздел соусов в конструкторе."""
+        self.click_element(MainPageLocators.SAUCES_SECTION)
+    
+    @allure.step("Кликнуть на раздел 'Начинки'")
+    def click_fillings_section(self):
+        """Кликнуть на раздел начинок в конструкторе."""
+        self.click_element(MainPageLocators.FILLINGS_SECTION)
+    
+    @allure.step("Получить активный раздел конструктора")
+    def get_active_section(self):
+        """Получить текст активного раздела конструктора."""
+        try:
+            active_section = self.find_element(MainPageLocators.ACTIVE_SECTION)
+            return active_section.text
+        except:
+            return ""
+    
+    @allure.step("Перетащить элемент в конструктор")
+    def drag_element_to_constructor(self, element, target_locator):
+        """Перетащить элемент в зону конструктора."""
+        target = self.find_element(target_locator)
+        self.actions.drag_and_drop(element, target).perform()
+    
+    @allure.step("Добавить булку в конструктор")
+    def add_bun_to_constructor(self):
+        """Добавить булку в конструктор."""
+        bun = self.find_element(MainPageLocators.BUN_INGREDIENT)
+        self.drag_element_to_constructor(bun, MainPageLocators.CONSTRUCTOR_AREA)
+    
+    @allure.step("Добавить соус в конструктор")
+    def add_sauce_to_constructor(self):
+        """Добавить соус в конструктор."""
+        sauce = self.find_element(MainPageLocators.SAUCE_INGREDIENT)
+        self.drag_element_to_constructor(sauce, MainPageLocators.CONSTRUCTOR_AREA)
+    
+    @allure.step("Добавить начинку в конструктор")
+    def add_filling_to_constructor(self):
+        """Добавить начинку в конструктор."""
+        filling = self.find_element(MainPageLocators.FILLING_INGREDIENT)
+        self.drag_element_to_constructor(filling, MainPageLocators.CONSTRUCTOR_AREA)
+
+    @allure.step("Закрыть модальное окно если есть")
+    def close_modal_if_present(self):
+        """Закрывает модальное окно если оно есть (для Firefox)."""
+        try:
+            # Используем методы base_page вместо прямого доступа к драйверу
+            modal_overlay = self.find_element((By.XPATH, "//div[contains(@class, 'Modal_modal_overlay__x2ZCr')]"))
+            close_button = self.find_element((By.XPATH, "//button[contains(@class, 'Modal_modal__close__TnseK')]"))
+            close_button.click()
+            return True
+        except:
+            return False
+        
+    @allure.step("Дождаться, пока элемент станет кликабельным")
+    def wait_for_element_clickable(self, locator, timeout=10):
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        return WebDriverWait(self.driver, timeout).until(EC.element_to_be_clickable(locator))
+
+    @allure.step("Дождаться, пока элемент станет видимым")
+    def wait_for_element_visible(self, locator, timeout=10):
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        return WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
+    
+    @allure.step("Кликнуть на кнопку оформления заказа")
+    def click_order_button(self):
+        """Кликнуть на кнопку оформления заказа."""
+        browser_name = self.get_browser_name()
+        self.safe_click_with_modal_check(MainPageLocators.ORDER_BUTTON, browser_name)
+
+    @allure.step("Проверить, что модальное окно заказа отображается")
+    def is_order_modal_displayed(self):
+        """Проверить, что модальное окно заказа отображается."""
+        return self.is_element_visible(MainPageLocators.ORDER_MODAL)
